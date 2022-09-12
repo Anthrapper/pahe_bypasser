@@ -2,15 +2,12 @@ import concurrent.futures
 import time
 from pahe import get_link,get_datas
 from settings import Tools
-from helium import *
 
 logger=Tools.logger
 driver=Tools.driver
 
-def multip():
-	e = get_datas('https://pahe.li/the-girl-on-a-bulldozer-2022-web-hd-480p-720p/')
-	logger.info(e)
-	logger.info(f"{len(e)} links detected")
+def multip(url):
+	e = get_datas(url)
 
 	with concurrent.futures.ProcessPoolExecutor() as executer:
 		executer.map(get_link,e)
@@ -20,5 +17,6 @@ def multip():
 	driver.quit()	
 		
 if __name__ == '__main__':
+	url = str(input("Enter the pahe url: "))
 	t1=time.perf_counter()
-	multip()
+	multip(url)

@@ -1,57 +1,49 @@
-import time
-from helium import *
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import TimeoutException
 from identifiers import *
 from settings import Tools
 
 logger=Tools.logger
 
 def get_link(e):
-	driver=get_driver()
-	go_to('https://pahe.li/the-girl-on-a-bulldozer-2022-web-hd-480p-720p/')
-	click(e)
-	if driver.current_url !='https://intercelestial.com/':
-		driver.close()
-		switch_to(find_all(Window())[0])
-		logger.debug("changed window")
-
-	wait_until(Text(AGREE_BUTTON).exists,10)
-	if Text(AGREE_BUTTON).exists():
-		click(Text(AGREE_BUTTON))
-		logger.debug("clicked on agree button")
-	else:
-		logger.warning('no agree button found')
+	driver=Tools.driver
+	driver.get('https://pahe.li/the-girl-on-a-bulldozer-2022-web-hd-480p-720p/')
+	texts= [y for x in [driver.find_elements('xpath',type) for type in LINK_TYPE] for y in x]
+	texts[e].click()
+	# if driver.current_url !='https://intercelestial.com/':
+	# 	driver.close()
+	# 	switch_to(find_all(Window())[0])
+	# 	logger.debug("window changed")
+	try:
+		WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, AGREE_BUTTON))).click()		
+	except TimeoutException:
+		logger.warning('No browser verification')
 
 	driver.execute_script("document.getElementById('landing').submit();")
+	WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, GENERATE))).click()
+	WebDriverWait(driver, 45).until(EC.element_to_be_clickable((By.ID, SHOW_LINK))).click()
 
-	wait_until(S(GENERATE).exists,30)
-	if S(GENERATE).exists():
-		click(S(GENERATE))
-		logger.debug("clicked on generate button")
-	else:
-		logger.warning('Not clicked on GENERATE')
-
-	wait_until(S(SHOW_LINK).exists,30)
-	if S(SHOW_LINK).exists():
-		click(S(SHOW_LINK))
-		logger.debug("clicked on download button")
-	else:
-		logger.warning('Not clicked on DOWNLOAD')
-
-	wait_until(Link(CONTINUE).exists,30)
-	final_link=''
+	window_after = driver.window_handles[1]
+	driver.switch_to.window(window_after)
+	driver.execute_script("window.scrollTo(0,535.3499755859375)")
 	try:
-		link=driver.find_element_by_link_text("Continue")
-		driver.execute_script("arguments[0].click();", link)
-		final_link= driver.current_url
-		logger.info(final_link)
-	except:
-		logger.warning('Not clicked on CONTINUE')
-	kill_browser()
-	return final_link
+		WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, CONTINUE)))
+		last=driver.find_element("link text",CONTINUE)
+		driver.execute_script("arguments[0].click();", last)
+	except TimeoutException:
+		logger.warning('Failed in the last step')
+
+	link=driver.current_url
+	logger.info(link)
+	driver.quit()
+	return link
 
 def get_datas(url):
-	
-	go_to(url)
-	e= [y.value for x in [find_all(Text(type)) for type in LINK_TYPE if Text(type).exists()] for y in x]
-	logger.info(e)
-	return e
+	driver=Tools.driver
+	driver.get(url)
+	texts= [y for x in [driver.find_elements('xpath',type) for type in LINK_TYPE] for y in x]
+	logger.info(f"{len(texts)} links detected")
+	out=[x for x in range(len(texts))]
+	return out

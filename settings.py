@@ -1,6 +1,5 @@
 from selenium.webdriver.chrome.options import Options
 import logging.config
-from helium import *
 from selenium import webdriver
 
 
@@ -11,7 +10,7 @@ chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument("--disable-logging")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--log-level=3")
-# chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 
 
 logging.basicConfig(
@@ -25,5 +24,4 @@ logging.basicConfig(
 
 class Tools(object):
 	logger = logging.getLogger(__name__)
-	driver= start_chrome()
-	# driver =set_driver(webdriver.Chrome(executable_path='chromedriver.exe',chrome_options=chrome_options))
+	driver =webdriver.Chrome(executable_path='chromedriver.exe',chrome_options=chrome_options)

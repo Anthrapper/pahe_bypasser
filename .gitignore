@@ -1,2 +1,3 @@
 logs.log
 chromedriver.exe
+__pycache__/
