@@ -1,3 +1,4 @@
+import time
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,9 +8,9 @@ from settings import Tools
 
 logger=Tools.logger
 
-def get_link(e):
+def get_link(e,url,mul):
 	driver=Tools.driver
-	driver.get('https://pahe.li/the-girl-on-a-bulldozer-2022-web-hd-480p-720p/')
+	driver.get(url)
 	texts= [y for x in [driver.find_elements('xpath',type) for type in LINK_TYPE] for y in x]
 	texts[e].click()
 	# if driver.current_url !='https://intercelestial.com/':
@@ -37,7 +38,8 @@ def get_link(e):
 
 	link=driver.current_url
 	logger.info(link)
-	driver.quit()
+	if mul:
+		driver.quit()
 	return link
 
 def get_datas(url):
