@@ -21,4 +21,5 @@ A buggy method to automate link grabbing from pahe (It is what it is)
 ### NOTE
 
    Haven't tested this version in arm** will update
+   
    Feel free to open issues!
