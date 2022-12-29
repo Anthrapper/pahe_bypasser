@@ -4,7 +4,7 @@ A buggy method to automate link grabbing from pahe (It is what it is)
 
 ## How To Run
 
-```python
+```bash
    pip install -r requirements.txt
    playwright install
    python main.py
@@ -12,17 +12,13 @@ A buggy method to automate link grabbing from pahe (It is what it is)
    change LINK_TYPE in identifiers.py accordingly
 ```
 
-## What's New
+### What's New
 
-```python
+
    Updated the pahe script
    migrated the code base from selenium to playwright
-```
 
-## NOTE
+### NOTE
 
-```python
    Haven't tested this version in arm** will update
-
    Feel free to open issues!
-```
