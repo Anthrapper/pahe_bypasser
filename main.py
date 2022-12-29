@@ -1,34 +1,29 @@
-import concurrent.futures
-import time
-from pahe import get_link,get_datas
+import asyncio
+from playwright.async_api import async_playwright
+from identifiers import *
+from pahe import *
 from settings import Tools
 
 logger=Tools.logger
-driver=Tools.driver
 
-def multip(url):
-	e = get_datas(url)
+async def run(playwright,url):
+	browser = await playwright.chromium.launch()
+	context = await browser.new_context()
+	num = await get_count(context,url)
+ 
+	for i in range(0,num):
+		new_page = await handle_tab(context,i,url)
+		await new_page.locator(HUMAN_VERIFICATION).click()
+		await new_page.click(GENERATE)
+		second_link = await handle_second_tab(context,new_page)
+		await second_link.locator(CONTINUE).click()
+		logger.info(second_link.url)
+		await second_link.close()
+	await browser.close()
 
-	with concurrent.futures.ProcessPoolExecutor(max_workers=10) as executer:
-		executer.map(get_link,[e,url,True])
-	
-	t2=time.perf_counter()
-	Tools.logger.info(f"Total time taken is {t2-t1} seconds")
-	driver.quit()	
-
-def loop(url):
-	e= get_datas(url)
-	for i in e:
-		get_link(i,url,False)
-	t2=time.perf_counter()
-	Tools.logger.info(f"Total time taken is {t2-t1} seconds")
-	driver.quit()
-
-if __name__ == '__main__':
-	url = str(input("Enter the pahe url: "))
-	proc_type= 'seq'
-	t1=time.perf_counter()
-	if proc_type=='seq':
-		loop(url)
-	else:
-		multip(url)
+async def main():
+	# url = str(input("Enter the pahe url: "))
+	url ='https://pahe.li/basic-instinct-1992-bluray-480p-720p/'
+	async with async_playwright() as playwright:
+		await run(playwright,url)
+asyncio.run(main())

@@ -1,51 +1,36 @@
-import time
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
-from identifiers import *
 from settings import Tools
+from identifiers import *
 
 logger=Tools.logger
 
-def get_link(e,url,mul):
-	driver=Tools.driver
-	driver.get(url)
-	texts= [y for x in [driver.find_elements('xpath',type) for type in LINK_TYPE] for y in x]
-	texts[e].click()
-	# if driver.current_url !='https://intercelestial.com/':
-	# 	driver.close()
-	# 	switch_to(find_all(Window())[0])
-	# 	logger.debug("window changed")
-	try:
-		WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, AGREE_BUTTON))).click()		
-	except TimeoutException:
-		logger.warning('No browser verification')
+async def handle_tab(context,i,url):
+	while True:
+		page = await context.new_page()
+		await page.goto(url)
 
-	driver.execute_script("document.getElementById('landing').submit();")
-	WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.CSS_SELECTOR, GENERATE))).click()
-	WebDriverWait(driver, 45).until(EC.element_to_be_clickable((By.ID, SHOW_LINK))).click()
+		async with context.expect_page() as new_page_info:
+			await page.locator(LINK_TYPE[0]).nth(i).click()
+		new_page = await new_page_info.value
+		# await new_page.wait_for_load_state()
+		if 'https://intercelestial.com/' in new_page.url:
+			await page.close()
+			break
+		await new_page.close()
+		await page.close()
+	return new_page
 
-	window_after = driver.window_handles[1]
-	driver.switch_to.window(window_after)
-	driver.execute_script("window.scrollTo(0,535.3499755859375)")
-	try:
-		WebDriverWait(driver, 30).until(EC.element_to_be_clickable((By.LINK_TEXT, CONTINUE)))
-		last=driver.find_element("link text",CONTINUE)
-		driver.execute_script("arguments[0].click();", last)
-	except TimeoutException:
-		logger.warning('Failed in the last step')
+async def handle_second_tab(context,page):
+	async with context.expect_page() as second_page_info:
+		await page.click(SHOW_LINK)
+	new_page = await second_page_info.value
+	await new_page.wait_for_load_state()
+	await page.close()
+	return new_page
 
-	link=driver.current_url
-	logger.info(link)
-	if mul:
-		driver.quit()
-	return link
-
-def get_datas(url):
-	driver=Tools.driver
-	driver.get(url)
-	texts= [y for x in [driver.find_elements('xpath',type) for type in LINK_TYPE] for y in x]
-	logger.info(f"{len(texts)} links detected")
-	out=[x for x in range(len(texts))]
-	return out
+async def get_count(context,url):
+	page = await context.new_page()
+	await page.goto(url)
+	num =await page.locator(LINK_TYPE[0]).count()
+	logger.info(f" found {num} links")
+	await page.close()
+	return num
