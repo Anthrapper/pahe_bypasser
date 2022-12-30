@@ -17,10 +17,9 @@ A buggy method to automate link grabbing from pahe (It is what it is)
 ### What's New
 
    Updated the pahe script
-   migrated the code base from selenium to playwright
+   Migrated the code base from selenium to playwright
+   No need to setup webdrivers and browsers seperately
 
 ### NOTE
-
-   Haven't tested this version in arm** will update
 
    Feel free to open issues!
