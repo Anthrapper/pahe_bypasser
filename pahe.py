@@ -7,11 +7,10 @@ async def handle_tab(context,i,url):
 	while True:
 		page = await context.new_page()
 		await page.goto(url)
-
 		async with context.expect_page() as new_page_info:
 			await page.locator(LINK_TYPE[0]).nth(i).click()
 		new_page = await new_page_info.value
-		# await new_page.wait_for_load_state()
+		await new_page.wait_for_load_state()
 		if 'https://intercelestial.com/' in new_page.url:
 			await page.close()
 			break

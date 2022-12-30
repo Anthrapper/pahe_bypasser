@@ -22,8 +22,7 @@ async def run(playwright,url):
 	await browser.close()
 
 async def main():
-	# url = str(input("Enter the pahe url: "))
-	url ='https://pahe.li/basic-instinct-1992-bluray-480p-720p/'
+	url = str(input("Enter the pahe url: "))
 	async with async_playwright() as playwright:
 		await run(playwright,url)
 asyncio.run(main())
