@@ -13,12 +13,16 @@ async def run(playwright,url):
 	for i in range(len(links)):
 		new_page = await context.new_page()
 		await new_page.goto(links[i]['href'])
+		try:
+			await new_page.locator(COOKIES_BUTTON).click()
+		except:
+			pass
 		await new_page.locator(HUMAN_VERIFICATION).click()
 		await new_page.click(GENERATE)
-		second_link = await handle_second_tab(context,new_page)
-		await second_link.locator(CONTINUE).click()
-		logger.info(second_link.url)
-		await second_link.close()
+		final_link = await handle_second_tab(context,new_page)
+		logger.info(final_link)
+		# for getting cookies pop up
+		await context.clear_cookies()
 	await browser.close()
 
 async def main():

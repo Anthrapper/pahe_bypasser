@@ -1,3 +1,4 @@
+COOKIES_BUTTON='text="AGREE"'
 HUMAN_VERIFICATION='//*[@id="soralink-human-verif-main"]'
 GENERATE="#generater > img"
 SHOW_LINK="#showlink"
